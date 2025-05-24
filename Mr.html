@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mobile Recharge</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .banner {
+      width: 100%;
+      border-radius: 10px;
+    }
+    h2 {
+      text-align: center;
+      color: #0057e7;
+    }
+    select, input[type="text"], button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    .plan {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .plan:hover {
+      border-color: #0057e7;
+      background: #f0f8ff;
+    }
+    .price {
+      text-decoration: line-through;
+      color: red;
+      margin-right: 10px;
+    }
+    .discounted {
+      color: green;
+      font-weight: bold;
+    }
+    .hidden {
+      display: none;
+    }
+    .qr {
+      width: 100%;
+      max-width: 300px;
+      display: block;
+      margin: 20px auto;
+    }
+    .center {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="main">
+  <img src="https://i.ibb.co/60txDHVF/20250524-211146.jpg" alt="20250524-211146" border="0">
+  
+  <h2>MOBILE RECHARGE</h2>
+  <div>
+    <label>Select Provider:</label>
+    <select id="provider" onchange="showPlans()">
+      <option value="">-- Choose Network --</option>
+      <option value="jio">Jio</option>
+      <option value="airtel">Airtel</option>
+      <option value="vi">Vi</option>
+      <option value="bsnl">BSNL</option>
+    </select>
+  </div>
+
+  <div id="plans" class="hidden"></div>
+
+  <div id="mobileInput" class="hidden">
+    <label>Enter Mobile Number:</label>
+    <input type="text" id="mobile" placeholder="Enter 10-digit number">
+    <button onclick="goToPayment()">Continue</button>
+  </div>
+</div>
+
+<div class="container hidden" id="paymentPage">
+  <h2>Complete Your Payment</h2>
+  <img src="https://i.ibb.co/9mTTcWPS/albert-upi-qr.png" alt="Scanner" class="qr">
+  <div class="center">
+    <h3>Pay the amount: ₹<span id="finalPrice"></span></h3>
+    <p>Recharge will be credited immediately after payment.</p>
+  </div>
+</div>
+
+<script>
+  const plansData = {
+    jio: [
+      {original: 239, discounted: 96, details: "1.5GB/day, 28 days"},
+      {original: 299, discounted: 120, details: "2GB/day, 28 days"},
+      {original: 666, discounted: 266, details: "1.5GB/day, 84 days"}
+    ],
+    airtel: [
+      {original: 265, discounted: 106, details: "1GB/day, 28 days"},
+      {original: 299, discounted: 120, details: "1.5GB/day, 28 days"},
+      {original: 719, discounted: 288, details: "1.5GB/day, 84 days"}
+    ],
+    vi: [
+      {original: 269, discounted: 108, details: "1GB/day, 28 days"},
+      {original: 299, discounted: 120, details: "2GB/day, 28 days"},
+      {original: 599, discounted: 240, details: "1.5GB/day, 70 days"}
+    ],
+    bsnl: [
+      {original: 247, discounted: 99, details: "Unlimited, 30 days"},
+      {original: 429, discounted: 171, details: "Unlimited, 81 days"},
+      {original: 599, discounted: 240, details: "Unlimited, 90 days"}
+    ]
+  };
+
+  let selectedPrice = 0;
+
+  function showPlans() {
+    const provider = document.getElementById("provider").value;
+    const plansDiv = document.getElementById("plans");
+    plansDiv.innerHTML = "";
+    if (plansData[provider]) {
+      plansData[provider].forEach((plan, index) => {
+        const planDiv = document.createElement("div");
+        planDiv.className = "plan";
+        planDiv.innerHTML = `
+          <p><span class="price">₹${plan.original}</span><span class="discounted">₹${plan.discounted}</span></p>
+          <p>${plan.details}</p>
+        `;
+        planDiv.onclick = () => {
+          selectedPrice = plan.discounted;
+          document.getElementById("mobileInput").classList.remove("hidden");
+        };
+        plansDiv.appendChild(planDiv);
+      });
+      plansDiv.classList.remove("hidden");
+    }
+  }
+
+  function goToPayment() {
+    const number = document.getElementById("mobile").value;
+    if (number.length !== 10 || isNaN(number)) {
+      alert("Please enter a valid 10-digit number.");
+      return;
+    }
+    document.getElementById("main").classList.add("hidden");
+    document.getElementById("paymentPage").classList.remove("hidden");
+    document.getElementById("finalPrice").innerText = selectedPrice;
+  }
+</script>
+
+</body>
+</html>
